@@ -51,14 +51,18 @@ jobs:
             echo 'CONFIG_GOLANG_BUILD_CACHE_DIR=""' >> .config
           fi
           make defconfig
-          make -j $(nproc) V=sc download world
+
+          # Added logging to ensure make commands are visible
+          echo "Downloading packages..."
+          make -j $(nproc) V=sc download world || { echo "Download failed"; exit 1; }
 
       - name: Make ipks amnezia_${{ github.ref_name }} for original OpenWRT_v${{ matrix.tag }} ${{ matrix.target }}/${{ matrix.subtarget }}
         run: |
-          make -j $(nproc) package/amneziawg-tools/{clean,download,prepare,compile}
-          make -j $(nproc) package/amneziawg-go/{clean,download,prepare,compile}
-          make -j $(nproc) package/kmod-amneziawg/{clean,download,prepare,compile}
-          make -j $(nproc) package/luci-proto-amneziawg/{clean,download,prepare,compile}
+          echo "Building IPK packages..."
+          make -j $(nproc) package/amneziawg-tools/{clean,download,prepare,compile} || { echo "Building amneziawg-tools failed"; exit 1; }
+          make -j $(nproc) package/amneziawg-go/{clean,download,prepare,compile} || { echo "Building amneziawg-go failed"; exit 1; }
+          make -j $(nproc) package/kmod-amneziawg/{clean,download,prepare,compile} || { echo "Building kmod-amneziawg failed"; exit 1; }
+          make -j $(nproc) package/luci-proto-amneziawg/{clean,download,prepare,compile} || { echo "Building luci-proto-amneziawg failed"; exit 1; }
 
       - name: Prepare artifacts OpenWRT_v${{ matrix.tag }} ${{ matrix.target }}/${{ matrix.subtarget }}
         run: |
