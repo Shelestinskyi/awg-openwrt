@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: openwrt/openwrt
+          repository: immortalwrt/immortalwrt
           ref: v${{ matrix.tag }}
           fetch-depth: 0
 
@@ -33,11 +33,11 @@ jobs:
           echo "pkgarch: ${pkgarch}, target: ${target}, subtarget: ${subtarget}"
           rm -rf bin/packages/${pkgarch}/awgopenwrt/ || true
           rm -rf bin/targets/${target}/${subtarget}/packages/  || true
-          wget https://downloads.openwrt.org/releases/${{ matrix.tag }}/targets/${target}/${subtarget}/feeds.buildinfo -O feeds.conf
+          wget https://downloads.immortalwrt.org/releases/${{ matrix.tag }}/targets/${target}/${subtarget}/feeds.buildinfo -O feeds.conf
           echo "src-git awgopenwrt https://github.com/lolo6oT/awg-openwrt.git" >> ./feeds.conf
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          wget https://downloads.openwrt.org/releases/${{ matrix.tag }}/targets/${target}/${subtarget}/config.buildinfo -O .config
+          wget https://downloads.immortalwrt.org/releases/${{ matrix.tag }}/targets/${target}/${subtarget}/config.buildinfo -O .config
           make defconfig
       - name: Make Download and World OpenWRT_v${{ matrix.tag }} ${{ matrix.build_env.target}}/${{ matrix.build_env.subtarget}}
         run: |
